@@ -1,0 +1,457 @@
+\documentclass[11pt]{article}
+\usepackage{color}
+
+%----------Packages----------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{dsfont}
+\usepackage{mathrsfs}
+\usepackage{stmaryrd}
+\usepackage[all]{xy}
+\usepackage[mathcal]{eucal}
+\usepackage{verbatim}  %%includes comment environment
+\usepackage{fullpage}  %%smaller margins
+\usepackage{multicol}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+%Packages added to get the code block
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz-cd}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+%---------Commands----------
+\def\ZZ{\mathbb{Z}}
+\def\QQ{\mathbb{Q}}
+\def\PP{\mathbb{P}}
+\def\NN{\mathbb{N}}
+\def\OO{\mathcal{O}}
+\def\AA{\mathbb{A}}
+\def\BB{\mathbb{B}}
+\def\FF{\mathbb{F}}
+\def\LL{\mathbb{L}}
+\def\RR{\mathbb{R}}
+\def\CC{\mathbb{C}}
+\def\GG{\mathbb{G}}
+\def\lcm{\mathrm{lcm}}
+\def\ord{\mathrm{ord}}
+\def\rep{\mathrm{Rep}}
+\def\dom{\mathrm{Dom}}
+\def\ve{\varepsilon}
+\def\gal{\mathrm{Gal}}
+\def\emb{\mathrm{Emb}}
+
+\newcommand{\dlegendre}[2]{\ensuremath{\left( \frac{#1}{#2} \right) }}
+\newcommand{\tlegendre}[2]{\ensuremath{\big( \frac{#1}{#2} \big) }}
+
+%----------Theorems----------
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem*{definition*}{Definition}
+\newtheorem{nondefinition}[theorem]{Non-Definition}
+\newtheorem{problem}{Problem}[section]
+\newtheorem*{tip}{Pro Tip}
+\newtheorem*{remark}{Remark}
+\numberwithin{equation}{subsection}
+
+\newenvironment{solution}
+{%
+  \vspace{0.5em}%
+  \hrule%
+  \vspace{0.2em}%
+  \noindent\textbf{Solution:}\!\!\!\!\!
+  \pushQED{\qed}
+}
+{%
+  \popQED
+  \vspace{.2em}
+  \hrule%
+  \vspace{0.75em}%
+}
+
+\newcommand{\separate}{
+    \vspace{.2in}
+    \hrule
+    \vspace{.2in}
+}
+
+
+\newcommand{\head}[1]{
+	\begin{center}
+		{\large #1}
+		\vspace{.05 in}
+	\end{center}
+	\bigskip 
+}
+
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+%Problem Set Data
+%number = 8
+%course = 261
+%semester = Fall 2025
+%path = /Users/thyde/Documents/Teaching/Vassar/Semesters/2025 Fall/Math 261 Fall 2025/Problem Sets/Problem Set 8
+
+\begin{document}
+\pagestyle{plain}
+
+%%---  sheet number for theorem counter
+\setcounter{section}{2}   
+
+\head{MATH 999, Summer 2026\\ Note 2: The Extension Theorem\\
+Trevor Hyde}
+
+%HEADER
+
+\begin{center}
+   \emph{It is with surprise and wonderment that over the years I discovered (or rather, doubtless, rediscovered) the prodigious, truly inexhaustible richness, the unsuspected depth of this theme, apparently so anodyne. 
+   I believe I feel a central sensitive point there, a privileged point of convergence of the principal currents of mathematical ideas, and also of the principal structures and visions of things which they express...}\\
+   \vspace{.1in}
+   
+   Alexander Grothendieck on the theme of Galois theory in mathematics, from \emph{Esquisse d'un Programme}.
+\end{center}
+\vspace{.1in}
+
+In the previous note we discussed algebraic extensions of a field $K$, including the ultimate algebraic extension $\overline{K}/K$, which contains all the roots of every polynomial $f(x) \in K[x]$.
+We often do not need to be so greedy and instead only want to consider extensions which contain all the roots of some given polynomial.
+That leads us to the notion of a \emph{splitting field}.
+
+\begin{definition}
+    We say $L/K$ is a \textbf{splitting extension} of a monic polynomial $f(x) \in K[x]$ if there are $\alpha_1,\ldots, \alpha_n \in L$ such that
+    \[
+        f(x) = (x - \alpha_1)\cdots (x - \alpha_n),
+    \]
+    and $L = K(\alpha_1,\ldots, \alpha_n)$.
+    In other words, $f(x)$ splits completely in $L$ and $L$ is the smallest extension of $K$ for which this occurs.
+\end{definition}
+
+For example, $\CC/\RR$ is a splitting extension of $x^2 +1 \in \RR[x]$ since $x^2 + 1 = (x - i)(x + i)$ and $\CC = \RR(i, -i)$.
+Note that in this case we did not actually need both of the roots of $x^2 + 1$ to generate $\CC$, but that's okay: the point is just that $x^2 + 1$ cannot split completely over any smaller extension.
+
+Splitting extensions are sensitive to both fields: we just saw that $\CC/\RR$ was the splitting extension for $x^2 + 1$ viewed as a polynomial in $\RR[x]$, however $\CC/\QQ$ is not a splitting extension for $x^2 + 1 \in \QQ[x]$.
+The reason is that $\QQ(i,-i) = \QQ(i)$ is \emph{much} smaller than $\CC$; the field $\QQ(i)$ is countable.
+\footnote{
+If $L/K$ is a splitting extension, we often call $L$ a \textbf{splitting field}, but just beware that when doing so the field $K$ is implicit in that. 
+}
+
+Splitting extensions always exist.
+If $f(x) \in K[x]$, then all the roots $\alpha_1,\ldots, \alpha_n$ of $f(x)$ live in $\overline{K}$ and thus $K \subseteq K(\alpha_1,\ldots, \alpha_n) \subseteq \overline{K}$ gives us a splitting extension of $K$.
+But here's a philosophical question:
+If we construct splitting extensions of $f(x) \in K[x]$ in two different ways $L_1/K$ and $L_2/K$, in what sense are these two fields ``the same''?
+They don't need to be on the nose equal.
+For example, consider $x^2 - 2 \in \QQ[x]$.
+One way to construct a splitting field is to first construct the real numbers \emph{a la} analysis and then to prove that 2 has a square root $\sqrt{2} \in \RR$.
+Then we have $\QQ \subseteq \QQ(\sqrt{2}) \subseteq \RR$ and $\QQ(\sqrt{2})/\QQ$ is a splitting extension of $x^2 - 2$.
+On the other hand, we can formally construct a splitting field via $L := \QQ[y]/\langle y^2 - 2\rangle$.
+We have
+\[
+    x^2 - 2 \equiv (x - y)(x + y) \bmod y^2 - 2.
+\]
+The field $L$ is not literally contained in the real numbers, so $L \neq \QQ(\sqrt{2})$.
+However, as we saw in a previous note, these two fields are isomorphic, with an isomorphism induced by the evaluation map.
+
+This example highlights what is true in general: any two splitting extensions of $f(x) \in K[x]$ are isomorphic.
+Proving this takes some effort.
+We will actually prove a stronger, more abstract result called the Extension Theorem\footnote{This theorem does not have an agreed upon name, but I think Extension Theorem is suitable.} from which the uniqueness of splitting fields may be deduced.
+The Extension Theorem is a fundamental technical building block for Galois theory.
+Before we get to it, a lemma and a couple definitions.
+
+\begin{definition}
+    Suppose $\phi : X_1 \to X_2$ is a function between sets $X_1$ and $X_2$.
+    Suppose that $X_1 \subseteq Y_1$ and $X_2 \subseteq Y_2$ are larger sets and that $\psi : Y_1 \to Y_2$.
+    We say that $\psi$ \textbf{extends} $\phi$ if $\psi(x) = \phi(x)$ for all $x \in X_1$.
+\end{definition}
+
+\begin{lemma}
+\label{lemma: extend}
+    Let $\phi : K_1 \to K_2$ be an isomorphism of fields.
+    Let $f_1(x) \in K_1[x]$ be an irreducible polynomial and let $f_2(x) \in K_2[x]$ be the polynomial we get by applying $\phi$ to each coefficient of $f_1$.
+    Let $\alpha_1$ be a root of $f_1$ in some extension of $K_1$ and let $\alpha_2$ be a root of $f_2$ in some extension of $K_2$.
+    Then there is a unique isomorphism $\psi : K_1(\alpha_1) \to K_2(\alpha_2)$ such that $\psi$ extends $\phi$ and $\psi(\alpha_1) = \alpha_2$.
+\end{lemma}
+
+\begin{proof}
+    \blue{First prove that $f_2(x)$ is irreducible in $K_2[x]$.}
+    Let $\phi' : K_1[x] \to K_2[x]$ be the isomorphism of polynomial rings where $\phi'(g(x))$ is the polynomial we get by applying $\phi$ to all the coefficients of $g(x)$ (\blue{check that this really is ring isomorphism}).
+    Then $\phi'(\langle f_1(x)\rangle) = \langle f_2(x)\rangle$, hence $\phi'$ induces an isomorphism of fields
+    \[
+        \overline{\phi'} : \frac{K_1[x]}{\langle f_1(x)\rangle} \xrightarrow{\sim} \frac{K_2[x]}{\langle f_2(x)\rangle}.
+    \]
+    Furthermore we have the isomorphisms induced by evaluation maps
+    \[
+        \overline{\ve}_{\alpha_i} : \frac{K_i[x]}{\langle f_i(x)\rangle} \xrightarrow{\sim} K_i(\alpha_i).
+    \]
+    Now let $\psi := \overline{\ve}_{\alpha_2} \overline{\phi'}\overline{\ve}_{\alpha_1}^{-1}$, where we denote composition of maps by juxtaposition.
+    To diagram below helps us ``visualize'' the map we have just constructed.
+    \footnote{This is an example of a \emph{commutative diagram}, which expresses an identity of map compositions.
+    The idea is that you can follow any two paths in the diagram between the same starting and ending point and the result will be the same.
+    If you move along an arrow in the opposite direction in which it is pointing, you take the inverse of that map.
+    This diagram captures the definition of $\psi$, the bottom arrow, by taking the alternate path around the top of the diagram.
+    These sorts of commutative diagrams show up all the time in algebra.}
+    \[
+        \begin{tikzcd}[row sep=2.5em, column sep=4em]
+        \dfrac{K_1[x]}{\langle f_1(x) \rangle} \arrow[r, "\overline{\phi'}"] \arrow[d, "\overline{\ve}_{\alpha_1}"'] & \dfrac{K_2[x]}{\langle f_2(x) \rangle} \arrow[d, "\overline{\ve}_{\alpha_2}"] \\
+        K_1(\alpha_1) \arrow[r, "\psi"'] & K_2(\alpha_2)
+        \end{tikzcd}
+    \]
+    Let's check that the map $\psi$ has the two properties we want.
+    \blue{First show that $\psi$ extends $\phi$} and then \blue{show that $\psi(\alpha_1) = \alpha_2$.}
+    Don't overthink it, just carefully unpack the definitions of each map that makes up the composition defining $\psi$.
+    That finishes the proof of existence.
+
+    And for uniqueness, suppose that $\psi_1, \psi_2$ both extend $\phi$ and both send $\alpha_1$ to $\alpha_2$.
+    An element $\beta \in K_1(\alpha_1)$ is, by definition $g_1(\alpha_1)$ where $g_1(x) = a_0 + a_1x + \ldots + a_d x^d \in K_1[x]$.
+    Then for $i = 1, 2$ we have
+    \begin{align*}
+        \psi_i(\beta) &= \psi_i(a_0 + a_1\alpha_1 + \ldots + a_d\alpha_1^d)\\
+        &= \psi_i(a_0) + \psi_i(a_1)\psi_i(\alpha_1) + \ldots + \psi_i(a_d)\psi_i(\alpha_1)^d\\
+        &= \phi(a_0) + \phi(a_1)\alpha_2 + \ldots + \phi(a_d)\alpha_2^d.
+    \end{align*}
+    Hence $\psi_1(\beta) = \psi_2(\beta)$.
+    This implies that $\psi_1 = \psi_2$.
+\end{proof}
+
+\begin{definition}
+    A (monic)\footnote{There are a few definitions where I snuck in a monic assumption.
+    This is just for a minor notational simplicity.
+    The definitions also make sense for general polynomials, but you'll need to make minor and hopefully obvious tweaks.} polynomial $f(x) \in K[x]$ is \textbf{separable} if all the roots of $f(x)$ in $\overline{K}$ are distinct.
+    That is
+    \[
+        f(x) = (x - \alpha_1)\cdots (x - \alpha_d)
+    \]
+    for some $\alpha_i \in \overline{K}$ where $\alpha_i \neq \alpha_j$ when $i \neq j$.
+\end{definition}
+
+Most of the time, irreducible polynomials are separable.
+However, there are some weird situations in characteristic $p$ where this is not the case.
+We will discuss this later.
+For now just remember that separable means that we can separate all the roots from one another.
+
+\begin{theorem}[Extension Theorem]
+\label{thm: extension theorem}
+    Let $\phi : K_1 \to K_2$ be an isomorphism of fields.
+    Let $f_1(x) \in K_1[x]$ be a polynomial and let $f_2(x) \in K_2[x]$ be the polynomial we get by applying $\phi$ to each coefficient of $f_1$.
+    Let $L_1/K_1$ be a splitting extension of $f_1$ and let $L_2/K_2$ be a splitting extension of $f_2$.
+    Then
+    \begin{enumerate}
+        \item (Existence) There exists an isomorphism $\psi : L_1 \to L_2$ which extends $\phi : K_1 \to K_2$.
+
+        \item (Multiplicity) The total number of distinct isomorphisms $\psi : L_1 \to L_2$ extending $\phi$ is at most $[L_1 : K_1]$.
+        If $f(x)$ is separable, then the number of extensions is exactly $[L_1 : K_1]$.
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    We will prove this by induction on $d := [L_1 : K_1]$.
+    Let's start with the base case, $d = 1$.
+    If $d = 1$, then $L_1 = K_1$.
+    So we can simply let $\psi = \phi$.
+    There is no other way to extend $\phi$ so the extension is unique.
+
+    Now suppose that $d > 1$ and that the result is true for all splitting extensions of lower degree.
+    Since $d > 1$, the polynomial $f_1(x)$ does not split completely over $K_1$, hence must have some irreducible factor $g_1(x)$.
+    Let $g_2(x) \in K_2[x]$ be the polynomial we get by applying $\phi$ to each of the coefficients of $g_1(x)$.
+    Note that $g_2(x)$ is irreducible in $K_2[x]$ and is a factor of $f_2(x)$ (\blue{but don't take my word for it, think it through}).
+    Let's say $e := \deg g_1 = \deg g_2$ and let $\alpha_1 \in L_1$ be a root of $g_1$.
+    Since $f_2$ splits completely over $L_2$, so does $g_2$.
+    Let $\alpha_{2,1}, \alpha_{2,2},\ldots, \alpha_{2,e'}$ be all the distinct roots of $g_2$ in $L_2$.
+    We always have $e' \leq e$ (\blue{why?}).
+    If $f_1$ and hence $f_2$ are separable, then so are their factors $g_1$ and $g_2$.
+    In that case $e' = e$.
+    For each $1 \leq j \leq e'$, Lemma \ref{lemma: extend} implies that $\phi$ has a unique extension $\phi_j : K_1(\alpha_1) \to K_2(\alpha_{2,j})$ such that $\phi_j(\alpha_1) = \alpha_{2,j}$.
+    Furthermore, if $\phi' : K_1(\alpha_1) \to L_2$ is any extension of $\phi$, then applying $\phi'$ to $g_1(\alpha_1) = 0$ gives us $g_2(\phi'(\alpha_1)) = 0$.
+    Hence $\phi'$ must send $\alpha_1$ to a root of $g_2$.
+    Thus the $\phi_j$ are the only possible extensions of $\phi$.
+
+    Now if we fix some $j$, let's suppose that we consider $K_1' := K_1(\alpha_1)$ and $K_2' := K_2(\alpha_{2,j})$ as our new base fields and $\phi_j : K_1' \to K_2'$ our now starting isomorphism.
+    Then $f_1(x) \in K_1'[x]$ and since $\phi_j$ extends $\phi$, we still have that $f_2(x) \in K_2'[x]$ is the result of applying $\phi_j$ to the coefficients of $f_1$.
+    Then $L_1/K_1'$ is still a splitting extension of $f_1$ and so is $L_2/K_2'$ a splitting extension of $f_2$, but the tower law implies that $[L_1 : K_1'] < [L_1 : K_1'][K_1' : K_1] = [L_1 : K_1] = d$.
+    Therefore the induction hypothesis kicks in to tell us that $\phi_j$ has at least one and at most $[L_1 : K_1']$ extensions to an isomorphism $\psi_j : L_1 \to L_2$.
+    If $f_1$ is separable, the induction hypothesis implies that $\phi_j$ has exactly $[L_1 : K_1']$ extensions.
+    Note that since $\psi_j$ extends $\phi_j$, which itself extends $\phi$, we have that each $\psi_j$ extends $\phi$.
+    Since this is true for each $\phi_j$ and there are $e' \leq [K_1' : K_1]$ possible maps $\phi_j$, that gives us a total of at most $e'[L_1 : K_1'] \leq [L_1 : K_1'][K_1' : K_1] = [L_1 : K_1]$ extensions of $\phi$ and in the separable case, precisely this many.
+    That completes our induction.
+\end{proof}
+
+This proof is our most challenging yet, it may take a few reads before it sinks in.
+Here is our first application.
+If $K$ is a field and $L_1/K$ and $L_2/K$ are field extensions, then we say a homomorphism $\phi : L_1 \to L_2$ is a \textbf{$K$-homomorphism} if $\phi(a) = a$ for all $a \in K$.
+Equivalently, $\phi$ extends the identity map on $K$.
+
+\begin{corollary}[Uniqueness of Splitting Extensions]
+\label{cor: uniqueness of splitting extensions}
+    Let $f(x) \in K[x]$ be a polynomial.
+    If $L_1/K$ and $L_2/K$ are two splitting fields of $f$, then there exists at least one and at most $[L_1 : K]$ distinct $K$-isomorphisms $\psi : L_1 \to L_2$.
+    If $f$ is separable, there are exactly $[L_1 : K]$ distinct $K$-isomorphisms between $\psi : L_1 \to L_2$.
+\end{corollary}
+
+\begin{proof}
+    We directly apply the Extension Theorem to the identity map $\phi : K \to K$.
+\end{proof}
+
+Even though Corollary \ref{cor: uniqueness of splitting extensions} was our main goal, in order to prove it via induction we needed to state the result in a more general setting as in the statement of Theorem \ref{thm: extension theorem}.
+Since the conclusion is more general, we might as well make that the theorem.
+
+Just a reminder of the philosophy of algebra: if two objects are isomorphic, we treat them as essentially the same.
+Hence Corollary \ref{cor: uniqueness of splitting extensions} is telling us that any two ways you might construct a splitting field of a polynomial $f(x) \in K[x]$, those splitting fields are always $K$-isomorphic.
+The fact that it's a $K$-isomorphism (as opposed to just a plain old isomorphism) is important here: this means that the isomorphism $\psi$ between the splitting fields fixes everything in $K$, so really the two splitting fields look identical from the point of view of $K$.
+If it were not a $K$-isomorphism, then $\psi$ could potentially twist around $K$, replacing $f(x)$ with a totally different polynomial.
+In light of this result, we may simply talk about \emph{the} splitting extension of $f(x) \in K[x]$ and let this mean any splitting extension without worrying about how it was constructed; they're all essentially the same.
+
+Corollary \ref{cor: uniqueness of splitting extensions} also tells us something about how many $K$-isomorphisms there are between splitting fields.
+To see the importance of this, we'll need a corollary of the corollary.
+First, an important definition.
+Recall that an automorphism of an object $L$ is an isomorphism $\psi : L \to L$ from $L$ to itself.
+
+\begin{definition}
+    Let $L/K$ be a finite extension.
+    The \textbf{Galois group} of $L/K$ is the group of all $K$-automorphisms $\psi : L \to L$ with composition as the group operation.
+    We let $\gal(L/K)$ denote the Galois group.
+\end{definition}
+
+\begin{problem}
+    \blue{Verify that $\gal(L/K)$ satisfies the group axioms.}
+\end{problem}
+
+The Galois group of an extension should be thought of as the group of symmetries of the extension.
+It consists of all ways $L$ can be transformed which cannot be distinguished from the point of view of $K$.
+The following result bounds the size of the Galois group of a splitting extension, and even better when our polynomial is separable.
+
+\begin{corollary}
+\label{cor: Galois order}
+    Let $f(x) \in K[x]$ be a polynomial and let $L/K$ be a splitting extension.
+    Then $|\gal(L/K)| \leq [L : K]$ with equality holding whenever $f(x)$ is separable.
+\end{corollary}
+
+\begin{proof}
+    This is a direct application of Corollary \ref{cor: uniqueness of splitting extensions} with $L_1 = L_2$.
+\end{proof}
+
+At this point, Galois groups are quite mysterious.
+We have given a formal, abstract definition of them without yet seeing any examples.
+The Extension Theorem (via Corollary \ref{cor: Galois order}) tells us that for splitting extensions, the Galois group is always finite.
+Actually, the upper bound we got in Corollary \ref{cor: Galois order} holds for all finite extensions.
+
+\begin{problem}
+    Our goal in this problem is to prove that if $L/K$ is a finite extension, then $|\gal(L/K)| \leq [L : K]$.
+    In order to get this we will need to prove something more general, similar to how we proved the Extension Theorem in order to get Corollary \ref{cor: uniqueness of splitting extensions} and Corollary \ref{cor: Galois order}.
+    Given two extensions $L_1/K$ and $L_2/K$, let $\emb_K(L_1,L_2)$ denote the set of all injective $K$-homomorphisms (also called \textbf{$K$-embeddings}).
+    We will first prove that $|\emb_K(L,\overline{K})| \leq [L : K]$ for any finite extension $L/K$, and then achieve our goal as a corollary.
+    \begin{enumerate}
+        \item \blue{Prove that any finite extension $L/K$ may be expressed as $L = K(\alpha_1,\ldots, \alpha_n)$ for finitely many elements $\alpha_i \in L$.}
+
+        \item We now use induction on $n$ to prove that any finite extension $L/K$ where $L = K(\alpha_1,\ldots, \alpha_n)$ we have $|\emb_K(L,\overline{K})| \leq [L : K]$.
+        \begin{enumerate}
+            \item \blue{Prove the base case.}
+            \textbf{Hint:}
+            First show that any $K$-embedding of $K(\alpha_1)$ into $\overline{K}$ is determined by where it sends $\alpha_1$.
+            What are the options for where to send $\alpha_1$?
+            This has something to do with the minimal polynomial $m_1(x) \in K[x]$ of $\alpha_1$.
+
+            \item \blue{Prove the inductive step.}
+            \textbf{Hint:}
+            Try to use the inductive hypothesis to reduce this step back to a similar argument as the base case.
+        \end{enumerate}
+
+        \item Any finite extension $L/K$ is contained in some algebraic closure $K \subseteq L \subseteq \overline{K}$.
+        \blue{Prove that $\gal(L/K) \subseteq \emb_K(L,\overline{K})$ and use this to prove that $|\gal(L/K)| \leq [L : K]$.}
+    \end{enumerate}
+\end{problem}
+
+Thus we know that Galois groups of finite extensions are always finite and bounded in size by the degree of the extension.
+Corollary \ref{cor: Galois order} tells us that splitting fields of separable polynomials have the largest possible Galois groups.
+In other words, these are the \emph{most symmetric} extensions.
+We give these extensions a special name.
+
+\begin{definition}
+    A \textbf{Galois extension} $L/K$ is a splitting extension of a separable polynomial $f(x) \in K[x]$.
+\end{definition}
+
+The following is a direct consequence of Corollary \ref{cor: Galois order}.
+
+\begin{corollary}
+    If $L/K$ is a Galois extension, then $|\gal(L/K)| = [L : K]$.
+\end{corollary}
+
+Let's consider some examples.
+
+\begin{problem}\,
+    \begin{enumerate}
+        \item \blue{Let $K$ be a field of characteristic not equal to 2.
+        Prove that any quadratic extension $L/K$ is Galois.}
+
+        \item \blue{Now suppose that $K$ has characteristic 2.
+        In the previous note we classified the quadratic extensions of $K$.
+        Which of these quadratic extensions is Galois?}
+
+        \item Let $\sqrt[3]{2}$ be a real cube root of 2.
+        \blue{Prove that $\QQ(\sqrt[3]{2})/\QQ$ is not a Galois extension.}
+    \end{enumerate}
+\end{problem}
+
+\begin{problem}
+    Although the theoretical development of Galois theory is quite clean and streamlined, when we turn to examples things get gnarly.
+    We must use every trick we can think of to squeeze the truth out of polynomials.
+    For this problem, let $f(x) = x^3 + x^2 - 2x - 1 \in \QQ[x]$.
+
+    \begin{enumerate}
+        \item \blue{Prove that a cubic polynomial $g(x) \in K[x]$ is irreducible if and only if $g(x)$ has no roots in $K$.}
+        
+        \item \blue{Prove that $f(x)$ has no roots in $\QQ$ and use this to conclude that $f(x)$ is irreducible in $\QQ[x]$.}
+
+        \item \blue{Prove that if $\alpha$ is a root of $f(x)$, then $\alpha^2 - 2$ is also a root of $f(x)$.}
+        \textbf{Hint: }You might want to use Sage to help you with the algebra here.
+        Use \texttt{R.<x> = QQ[]} to create a polynomial ring called \texttt{R} with a variable \texttt{x} and rational coefficients.
+        You can use \texttt{f.subs(g)} to substitute the expression \texttt{g} for \texttt{x} in the polynomial \texttt{f}.
+        The \texttt{quo\_rem} function will be useful.
+
+        \item \blue{Prove that $f(x)$ must have at least one real root.}
+
+        \item \blue{Prove that $f(x)$ is separable.}
+
+        \item Let $\alpha \in \RR$ be such a root.
+        \blue{Prove that $\QQ(\alpha)/\QQ$ is a splitting extension of the separable polynomial $f(x)$.}
+        Hence $\QQ(\alpha)/\QQ$ is a Galois extension.
+
+        \item \blue{What is the Galois group of $\QQ(\alpha)/\QQ$?
+        Determine the structure of $\gal(\QQ(\alpha)/\QQ)$ and find explicit generators and relations.}
+    \end{enumerate}
+\end{problem}
+%Examples
+
+
+\end{document}
