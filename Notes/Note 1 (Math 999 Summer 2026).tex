@@ -1,0 +1,487 @@
+\documentclass[11pt]{article}
+\usepackage{color}
+
+%----------Packages----------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{dsfont}
+\usepackage{mathrsfs}
+\usepackage{stmaryrd}
+\usepackage[all]{xy}
+\usepackage[mathcal]{eucal}
+\usepackage{verbatim}  %%includes comment environment
+\usepackage{fullpage}  %%smaller margins
+\usepackage{multicol}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+%Packages added to get the code block
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+%---------Commands----------
+\def\ZZ{\mathbb{Z}}
+\def\QQ{\mathbb{Q}}
+\def\PP{\mathbb{P}}
+\def\NN{\mathbb{N}}
+\def\OO{\mathcal{O}}
+\def\AA{\mathbb{A}}
+\def\BB{\mathbb{B}}
+\def\FF{\mathbb{F}}
+\def\LL{\mathbb{L}}
+\def\RR{\mathbb{R}}
+\def\CC{\mathbb{C}}
+\def\GG{\mathbb{G}}
+\def\lcm{\mathrm{lcm}}
+\def\ord{\mathrm{ord}}
+\def\rep{\mathrm{Rep}}
+\def\dom{\mathrm{Dom}}
+\def\ve{\varepsilon}
+
+\newcommand{\dlegendre}[2]{\ensuremath{\left( \frac{#1}{#2} \right) }}
+\newcommand{\tlegendre}[2]{\ensuremath{\big( \frac{#1}{#2} \big) }}
+
+%----------Theorems----------
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem*{definition*}{Definition}
+\newtheorem{nondefinition}[theorem]{Non-Definition}
+\newtheorem{problem}{Problem}[section]
+\newtheorem*{tip}{Pro Tip}
+\newtheorem*{remark}{Remark}
+\numberwithin{equation}{subsection}
+
+\newenvironment{solution}
+{%
+  \vspace{0.5em}%
+  \hrule%
+  \vspace{0.2em}%
+  \noindent\textbf{Solution:}\!\!\!\!\!
+  \pushQED{\qed}
+}
+{%
+  \popQED
+  \vspace{.2em}
+  \hrule%
+  \vspace{0.75em}%
+}
+
+\newcommand{\separate}{
+    \vspace{.2in}
+    \hrule
+    \vspace{.2in}
+}
+
+
+\newcommand{\head}[1]{
+	\begin{center}
+		{\large #1}
+		\vspace{.05 in}
+	\end{center}
+	\bigskip 
+}
+
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+%Problem Set Data
+%number = 8
+%course = 261
+%semester = Fall 2025
+%path = /Users/thyde/Documents/Teaching/Vassar/Semesters/2025 Fall/Math 261 Fall 2025/Problem Sets/Problem Set 8
+
+\begin{document}
+\pagestyle{plain}
+
+%%---  sheet number for theorem counter
+\setcounter{section}{1}   
+
+\head{MATH 999, Summer 2026\\ Note 1: Degree and Algebraic Extensions\\
+Trevor Hyde}
+
+%HEADER
+
+\begin{center}
+   \emph{By a field we will mean every infinite system of real or complex numbers so closed in itself and perfect that addition, subtraction, multiplication, and division of any two of these numbers again yields a number of the system.}\\
+   \vspace{.1in}
+   Richard Dedekind, the first formal definition of a field
+\end{center}
+\vspace{.1in}
+
+In this note we discuss the \emph{degree} of a field extension and the notion of an \emph{algebraic extension}.
+Recall that a field extension $L/K$ is a pair of fields $L, K$ such that $K \subseteq L$.
+This containment creates an interesting situation: Since $L$ is a field, it is closed under addition. 
+Since $L$ contains $K$, we can scale any $v \in L$ by $a \in K$ to get $av \in L$.
+These two operations, addition and scalar multiplication by $K$, are exactly the operations which define a $K$-vector space.
+Hence $L$ is not only a field, it is also a $K$-vector space!
+This observation allows us to bring all of linear algebra to bear on the study of field extensions.
+We can code switch between thinking of elements of $L$ as simply elements of a field or as element of a vector space.
+For now, we just import the notion of a basis and the dimension of a vector space.
+Recall that every $K$-vector space $V$ has a basis, a collection of vectors $v_1,\ldots, v_n \in V$ such that every vector $v \in V$ can be expressed as a unique $K$-linear combination of the $v_i$,
+\[
+    v = a_1v_1 + \ldots + a_nv_n,
+\]
+where $a_i \in K$.
+Here I've used finitely many vectors for simplicity, but a basis could have infinitely many vectors.
+The dimension of a vector space $V$ is the cardinality (i.e. the number of basis vectors) of any basis.
+
+\begin{definition}
+    If $L/K$ is a field extension, then the \textbf{degree} of $L/K$, denoted $[L : K]$ is the dimension of $L$ as a $K$-vector space.
+    If $[L : K] < \infty$, we say $L/K$ is a \textbf{finite} extension, otherwise we say it is an \textbf{infinite} extension.
+\end{definition}
+
+Let's consider the extension $\CC/\RR$.
+Then $\CC$ is an $\RR$-vector space.
+What is the $\RR$-dimension of $\CC$?\footnote{When you studied linear algebra, the field used for coefficients was probably not explicitly mentioned much.
+Maybe you just always used $\RR$ or $\CC$ for the coefficients.
+When dealing with field extensions, we often find ourselves in situations where we have interactions between vector spaces with several different coefficient fields.
+So we need to specify our coefficient field explicitly in this setting.}
+By definition, $\CC = \{a + bi : a, b \in \RR\}$.
+Hence the vectors $1, i \in \CC$ span $\CC$
+\footnote{You might be used to thinking of ``vectors'' as things that looks like lists of numbers $(7,\pi,-3)$.
+However, more generally, the word vector just refers to elements of a vector space.
+Hence numbers themselves can be vectors, as in the case we consider here.}
+and they must also be $\RR$-linearly independent (do you see why?
+What would happen if $1$ and $i$ were linearly dependent?)
+Hence $\{1,i\}$ forms an $\RR$-basis, which implies that the degree of the extension $\CC/\RR$ is $[\CC : \RR] = 2$.
+
+What about the trivial extension $\CC/\CC$?
+What's the degree of this extension?
+Once we allow $\CC$-scalars, we can get everything as a scalar multiple of the vector $1 \in \CC$.
+Namely, $a + bi = (a + bi)\cdot 1$.
+You can't get any smaller than that, hence $[\CC : \CC] = 1$.
+More generally, for any field $K$ the same argument implies that $[K : K] = 1$.
+
+So why do we call $[L : K]$ the \emph{degree} of an extension?
+This terminology comes from one particularly important example.
+Suppose $L/K$ is an extension and $\alpha \in L$ is algebraic over $K$.
+Then in Note 0 we showed that $K(\alpha) \cong K[x]/\langle m_\alpha(x)\rangle$ where $m_\alpha(x)$ is the minimal polynomial of $\alpha$ over $K$.
+The next proposition determines the degree of $K(\alpha)/K$.
+
+\begin{proposition}
+\label{prop: degree}
+    $[K(\alpha) : K] = \deg m_\alpha(x)$.
+\end{proposition}
+
+\begin{proof}
+    You can help me prove this.
+    \blue{First check that the ring isomorphism $K(\alpha) \cong K[x]/\langle m_\alpha(x)\rangle$ is also a $K$-linear isomorphism of $K$-vector spaces.}
+    This shows that we can use $K[x]/\langle m_\alpha(x)\rangle$ to calculate $[K(\alpha) : K]$.
+    Next, \blue{use the division with remainder theorem for polynomials to prove that if $d := \deg m_\alpha(x)$, then $\{1,x,\ldots, x^{d-1}\}$ forms a $K$-basis for $K[x]/\langle m_\alpha(x)\rangle$.}
+    Finally, \blue{connect the dots to conclude that $[K(\alpha) : K] = d$.}
+\end{proof}
+
+Recall that we showed that $\CC = \RR(i)$ and that the minimal polynomial of $i$ over $\RR$ was $x^2 + 1$.
+Hence Proposition \ref{prop: degree} implies that $[\RR(i) : \RR] = 2$, which is consistent with out previous calculation.
+
+Note that extensions of the form $K(\alpha)/K$ are sometimes called \textbf{simple} extensions.
+Hence Proposition \ref{prop: degree} gives us a general method for calculating the degree of a simple extension: find the degree of the minimal polynomial of $\alpha$.
+
+Many questions about field extensions ultimately reduce to deciding whether or not a given polynomial $f(x) \in K[x]$ is irreducible.
+For example, let $d$ be an integer.
+What is the the degree of the extension $\QQ(\sqrt{d})/\QQ$?
+Since this is a simple extension, we just need to find the minimal polynomial of $\sqrt{d}$ over $\QQ$.
+Observe that $x^2 - d \in \QQ[x]$ is a polynomial with coefficients in $\QQ$ which vanishes at $\sqrt{d}$.
+Hence $x^2 - d$ belongs to the kernel of $\ve_{\sqrt{d}}$, meaning that $m_{\sqrt{d}}(x)$ must be a factor of $x^2 - d$.
+This helps us narrow down our search: $m_{\sqrt{d}}(x) \in \QQ[x]$ is a polynomial which divides the quadratic polynomial $x^2 - d$.
+Hence $m_{\sqrt{d}}(x)$ has degree 1 or 2.
+If $x^2 - d$ is irreducible, then $m_{\sqrt{d}}(x) = x^2 - d$ and $[\QQ(\sqrt{d}) : \QQ] = 2$.
+Otherwise $x^2 - d$ is reducible, and $m_{\sqrt{d}}(x)$ must have degree 1 and thus $[\QQ(\sqrt{d}) : \QQ] = 1$.
+Thus we are reduced to deciding when $x^2 - d$ is irreducible.
+
+\begin{problem}
+    Let $d$ be an integer.
+    Clearly if $d = 0$, then $x^2 - d = x^2$ is not irreducible.
+    So we now suppose that $d \neq 0$.
+    \begin{enumerate}
+        \item \blue{If $d < 0$, prove that $x^2 - d$ is always irreducible.}
+
+        \item 
+        If $p$ is a prime number and $n$ is an integer, let $v_p(n)$ denote the number of times the prime $p$ divides $n$.
+        We call $v_p(n)$ the \textbf{$p$-adic valuation} of $n$.
+        \blue{Suppose that $d > 0$.
+        Prove that $x^2 - d$ is irreducible if and only if there exists some prime $p$ such that $v_p(d)$ is odd.}
+    \end{enumerate}
+\end{problem}
+
+Suppose we have a tower of field extensions $F \subseteq K \subseteq L$.
+How do all the degrees $[L : F]$, $[L : K]$, and $[K : F]$ relate to one another?
+This is answered by the following theorem
+
+\begin{theorem}[Tower Law]
+    Suppose $F \subseteq K \subseteq L$ is a tower of field extensions.
+    Then $L/F$ is finite if and only if $L/K$ and $K/F$ are finite.
+    Furthermore, when all the extensions are finite we have
+    \[
+        [L : F] = [L : K][K : F].
+    \]
+\end{theorem}
+
+\begin{proof}
+    If $L$ is a finite dimensional vector space, then $K \subseteq L$ is an $F$-subspace, hence must also be finite dimensional.
+    Furthermore, if $v_1,\ldots, v_n$ spans $L$ with coefficients in $F$, then it must also span $L$ with coefficients in the larger field $K$.
+    Hence $L$ has a finite spanning set as an $K$-vector space, which also implies that $L/K$ is a finite extension.
+    Thus $L/F$ finite implies that $L/K$ and $K/F$ are finite.
+
+    Suppose that $u_1,\ldots, u_d$ is a $K$-basis for $L$ and that $v_1,\ldots, v_e$ is a $F$-basis for $K$.
+    \blue{Prove that the set of products $\{u_iv_j : 1 \leq i \leq d, 1 \leq j \leq e\}$ forms an $F$-basis for $L/F$.}
+    Since $d = [L : K]$ and $e = [K : F]$, it follows that
+    \[
+        [L : F] = de = [L : K][K : F]
+    \]
+    as we wished to show.
+    This also shows that $L/F$ is finite when $L/K$ and $K/F$ are finite.
+\end{proof}
+
+The tower law is an incredibly useful tool for analyzing the structure of field extensions as it gives us a strong arithmetic constraint on the degrees of intermediate extensions.
+Here is a fun and easy consequence.
+
+\begin{problem}
+\label{prob: prime degree}
+    Let $L/K$ be a extension of prime degree $p$.
+    \blue{Prove that $L = K(\alpha)$ for any $\alpha \in L \setminus K$.}
+\end{problem}
+
+\begin{problem}
+    Let's classify all quadratic extensions of an arbitrary field $K$ of characteristic not 2.
+    \begin{enumerate}
+        \item \blue{If $f(x) = ax^2 + bx + c \in K[x]$ is a quadratic polynomial ($a \neq 0$), prove that the roots of $f(x)$ are given by
+        \[
+            x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
+        \]
+        }
+        Don't overthink it, just verify that these are the roots and make note of how we use the hypothesis about the characteristic of $K$.
+
+        \item Suppose that $L/K$ is a degree 2 extension.
+        \blue{Prove that $L = K(\sqrt{d})$ for some $d \in K$ which is not a square in $K$.}
+
+        \item Suppose that $d_1, d_2 \in K^\times$.
+        \blue{Prove that $K(\sqrt{d_1}) \cong K(\sqrt{d_2})$ if and only if $d_1/d_2$ is a square in $K$.}
+    \end{enumerate}
+
+    Hence if the characteristic of $K$ is not 2, then every quadratic extension of $K$ is gotten by adjoining the square root of some element of $K$ which is not a square.
+    Furthermore, this last part shows that the quadratic extensions of $K$ are parametrized by the nontrivial elements of the quotient group $K^\times/(K^\times)^2$, where $(K^\times)^2$ is the subgroup of nonzero squares in $K$.
+\end{problem}
+
+    So what's the deal with quadratic extensions for fields of characteristic 2?
+    The quadratic formula simply does not apply for these fields since we cannot divide by 2.
+    This is a fun rabbit hole to explore.
+
+\begin{problem}
+    Let $K$ be a field of characteristic 2.
+    \begin{enumerate}
+        \item \blue{Prove that the map $x^2 : K \to K$ is a ring homomorphism.}
+        The fact that $(a + b)^2 = a^2 + b^2$ in $K$ is a wacky feature of positive characteristic fields.
+    \end{enumerate}
+
+    Suppose that $L/K$ is a quadratic extension.
+    Then Problem \ref{prob: prime degree} implies that $L = K(\alpha)$ where $\alpha$ is any element of $L$ not in $K$.
+    Suppose that $m_\alpha(x) = x^2 + bx + c \in K[x]$ is the minimal polynomial of $\alpha$.
+    We break into cases depending on whether or not $b = 0$.
+    First suppose that $b \neq 0$.
+    
+    \begin{enumerate}
+        \item[2.] \blue{Prove that $\alpha/b$ is a root of $x^2 + x + \frac{c}{b^2}$.}
+        Hence we may suppose without loss of generality that $b = 1$ and that $\alpha$ is a root of $x^2 + x + c$ for some $c \in K$.
+
+        \item[3.] Let $\alpha_1, \alpha_2$ be roots of $x^2 + x + c_1$ and $x^2 + x + c_2$, respectively.
+        \blue{Prove that $K(\alpha_1) \cong K(\alpha_2)$ if and only if there is some $\beta \in K$ such that $\beta^2 + \beta = c_1 - c_2$.}
+
+        \item[4.] Let $K^+$ denote the additive group of $K$.
+        \blue{Prove that the function $\wp : K^+ \to K^+$ defined by $\wp(x) := x^2 + x$ is an additive group homomorphism.}
+        Thus part 3 shows that the quadratic extensions of $K$ generated by elements whose minimal polynomial has a nonzero linear term are parametrized by the nontrivial elements of the quotient group $K^+/\wp(K^+)$.
+    \end{enumerate}
+
+    Next suppose that $b = 0$.
+    \begin{enumerate}
+        \item[5.] In this case we have $\alpha = \sqrt{c}$.
+        \blue{Prove that $K(\sqrt{c_1}) = K(\sqrt{c_2})$ if and only if $c_1 = d^2 + c_2e^2$ for some $d, e \in K$.}
+    \end{enumerate}
+\end{problem}
+
+\subsection{Algebraic extensions}
+
+Proposition \ref{prop: degree} implies that adjoining any algebraic element to a field $K$ always yields a finite extension of $K$.
+The converse is also true:
+
+\begin{proposition}
+\label{prop: finite implies algebraic}
+    Let $L/K$ be a finite extension.
+    If $\alpha \in L$, then $\alpha$ is algebraic over $K$.
+\end{proposition}
+
+\begin{proof}
+    If $\alpha = 0$, then $m_\alpha(x) = x$ and we are done.
+    So we may suppose that $\alpha \neq 0$.
+    Let $d := [L : K]$.
+    Consider the set $A = \{1,\alpha,\alpha^2,\ldots, \alpha^d\}$.
+    \blue{Prove that the set $A$ of vectors must be linearly dependent over $K$.
+    Use this to conclude that there is some nonzero polynomial $f(x) \in K[x]$ such that $f(\alpha) = 0$.}
+    Hence $\alpha$ is algebraic over $K$.
+\end{proof}
+
+We say that an extension $L/K$ is \textbf{algebraic} if every element in $L$ is algebraic over $K$.
+Hence Proposition \ref{prop: finite implies algebraic} implies that finite extensions are always algebraic.
+The converse is not always true; we can have infinite algebraic extensions.
+We'll construct an important example of such an extension soon.
+Next we show that the property of an extension being algebraic is transitive.
+
+\begin{proposition}
+\label{prop: alg transitive}
+    Let $F \subseteq K \subseteq L$ be a tower of extensions.
+    If $L/K$ is algebraic and $K/F$ is algebraic, then $L/F$ is algebraic.
+\end{proposition}
+
+\begin{proof}
+    Suppose $\alpha \in L$.
+    Then by assumption we have that $\alpha$ is algebraic over $K$.
+    Let $m_{\alpha,K}(x) = a_0 + a_1x + \ldots + a_{d-1}x^{d-1} + x^d \in K[x]$ denote the minimal polynomial of $\alpha$ over $K$.
+    Then each $a_i$ is algebraic over $F$ by assumption.
+    Let's define a tower of field extensions recursively by $F_0 = F$ and $F_{i+1} = F_i(a_{i})$.
+    Since each $a_i$ is algebraic over $F$, it is also algebraic over any extension of $F$.
+    Hence Proposition \ref{prop: degree} implies that $F_{i+1}/F_i$ is finite and the tower law tells us that
+    \[
+        [F_d : F] = [F_d : F_{d-1}] \cdots [F_1 : F_0] < \infty.
+    \]
+    Then $F_d$ is a finite extension of $F$ which contains all the $a_i$ and thus $m_{\alpha, K}(x) \in F_d[x]$.
+    Therefore $\alpha$ is algebraic over $F_d$ and we conclude that $F_d(\alpha)/F_d$ is a finite extension.
+    Therefore the tower law implies that $F_d(\alpha)/F$ is also a finite extension and by construction we have that $\alpha \in F_d(\alpha)$.
+    Hence $\alpha$ is algebraic over $F$.
+    Since $\alpha$ was arbitrary, that's all we needed to show.
+\end{proof}
+
+\subsection{Algebraic closures}
+
+Suppose that $L/K$ is an arbitrary extension of fields.
+We call $F = \{\alpha \in L : \alpha \text{ is algebraic over $K$}\}$ the \textbf{algebraic closure of $K$ in $L$}.
+
+\begin{problem}
+    \blue{Prove that $F$ is a subfield of $L$ which contains $K$.}
+\end{problem}
+
+At this point I think it is worthwhile to reflect on how we have proved via abstract arguments several facts which if approached concretely are fairly complex.
+For example, suppose that $\alpha$ and $\beta$ are elements of an field extension $L/K$ which are algebraic over $K$.
+Hence we have some minimal polynomials $m_\alpha(x)$ and $m_\beta(x)$ which vanish at $\alpha$ and $\beta$.
+How do we use these polynomials to find the minimal polynomial for $\alpha + \beta$ or $\alpha\beta$?
+I encourage you to try an example.
+
+\begin{problem}
+    \blue{Find the minimal polynomial for $\sqrt{2} + \sqrt{3}$ over $\QQ$.}
+\end{problem}
+
+This illustrates a powerful general principle: the right abstraction allows us to probe much deeper than a more explicit, concrete approach.
+When building a mathematical theory, it is often a good idea to first develop the abstract framework and then to return on a second pass to figure out how to make things more explicit or ``effective'' as we like to call it.
+Doing things effectively is almost always harder and more intricate, but ultimately more practically useful.
+
+Speaking of abstract theory, let's show that for any field $K$, there always exists some extension of $K$ which contains all the roots of \emph{every} polynomial with coefficients in $K$.
+To do this, we will need a tool from set theory called Zorn's lemma.
+
+\begin{lemma}[Zorn]
+    Let $X$ be a set of sets.
+    Suppose that for any subset $Y \subseteq X$ such that for all $A, B \in Y$ either $A \subseteq B$ or $B \subseteq A$, there exists some $C \in X$ such that $A \subseteq C$ for all $A \in Y$.
+    Then there exists a maximal element $D \in X$: that is, if $E \in X$ and $D \subseteq E$, then $D = E$.
+\end{lemma}
+
+Zorn's lemma is not very intuitive at first blush.
+It is equivalent to one of the axioms of set theory known as the \emph{axiom of choice}.
+Since I do not expect many of you have taken a course in formal set theory, we might as well assume that Zorn's lemma is itself an axiom.
+Zorn arises when we try to perform certain kinds of infinite constructions.
+We say a polynomial $f(x) \in K[x]$ \textbf{splits completely} in an extension $L/K$ if $f(x) = c(x - \alpha_1)(x - \alpha_2)\cdots (x - \alpha_d)$ in $L[x]$ for some $c, \alpha_i \in L$.
+
+\begin{proposition}
+    Let $K$ be a field.
+    Then there exists an algebraic extension $\overline{K}/K$ such that every polynomial $f(x) \in K[x]$ splits completely over $\overline{K}$. 
+\end{proposition}
+
+\begin{proof}
+    Let $X$ be the set of all algebraic extensions of $K$.
+    Suppose that $Y \subseteq X$ is a subset such that for any two fields $F, L \in Y$ we have either $F \subseteq L$ or $L \subseteq F$.
+    \blue{Prove that $\bigcup_{F \in Y} F$ is an algebraic extension of $K$, hence $\bigcup_{F \in Y} F \in X$.}
+    Thus Zorn's lemma implies that there exists some maximal algebraic extension $\overline{K}$.
+    Suppose that $f(x) \in K[x]$ is a polynomial and let $g(x) \in \overline{K}[x]$ be an irreducible factor of $f(x)$. 
+    But then $L := \overline{K}[x]/\langle g(x)\rangle$ is a finite extension of $\overline{K}$, hence algebraic extension of $\overline{K}$.
+    Proposition \ref{prop: alg transitive} implies that $L/K$ is also algebraic.
+    Therefore the maximality of $\overline{K}$ tells us that $L = \overline{K}$.
+    Hence $[L : \overline{K}] = 1$ which tells us that $\deg g = 1$.
+    Therefore every $f(x) \in K[x]$ splits completely over $\overline{K}$.
+\end{proof}
+
+We call $\overline{K}$ an \textbf{algebraic closure} of $K$.
+Note the subtle difference from our earlier notion of algebraic closure: previously we defined the algebraic closure of $K$ \emph{in $L$}, whereas $\overline{K}$ is an \emph{absolute} algebraic closure, not relative to any specific extension of $K$.
+Our use of Zorn's lemma implies that our construction of $\overline{K}$ was highly non-explicit.
+We just know that abstractly there is some field containing all the roots of every polynomial in $K[x]$.
+Later we will prove that all algebraic closures of $K$ are isomorphic to one another.
+And yet there is typically no nice way to get your hands on a specific, nice, or canonical algebraic closure of $K$.
+
+However there are some notable exceptions.
+We say a field $K$ is \textbf{algebraically closed} if $K = \overline{K}$, meaning that every polynomial with coefficients in $K$ splits completely over $K$.
+
+\begin{theorem}[Fundamental Theorem of Algebra]
+    The complex numbers $\CC$ are algebraically closed.
+\end{theorem}
+
+We won't prove this now.
+Despite the name, there's not really any way to prove this entirely within algebra.
+Some input from analysis or topology is always required.
+One can play a game where you try to do as much of the proof as possible within algebra to minimize the dependence on analysis, and in doing so we can see that we just need to use the intermediate value theorem in order to conclude that any odd degree polynomial $f(x) \in \RR[x]$ must have a real root.
+However the truly conceptual proofs of this theorem, in my opinion, are those coming from topology.
+Join my Spring 2027 topology course to learn more.
+
+\begin{problem}
+    \blue{Prove that $\CC$ is an algebraic closure of $\RR$.}
+\end{problem}
+
+This is what makes the complex numbers so special: they contain all the solutions of every polynomial equation with real coefficients (or complex coefficients)!
+It might be tempting to say that $\CC$ is also an algebraic closure of $\QQ$, however that's not true.
+The complex numbers contain many elements which are transcendental over $\QQ$, hence is not an algebraic extension of $\QQ$.
+But how do we prove that?
+This is one of the reasons that Cantor developed his theory of countability, in order to prove that the real numbers must contain elements which are transcendental over $\QQ$.
+
+\begin{problem}
+    \blue{Prove that there are only countably many elements of $\CC$ which are algebraic over $\QQ$.
+    Hence $\overline{\QQ}$ is countable.}
+    Since $\RR$ and hence $\CC$ are uncountable, it follows that transcendental numbers exist.
+\end{problem}
+
+
+
+
+
+
+
+
+
+\end{document}
