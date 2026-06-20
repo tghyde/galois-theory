@@ -1,0 +1,331 @@
+\documentclass[11pt]{article}
+\usepackage{color}
+
+%----------Packages----------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{dsfont}
+\usepackage{mathrsfs}
+\usepackage{stmaryrd}
+\usepackage[all]{xy}
+\usepackage[mathcal]{eucal}
+\usepackage{verbatim}  %%includes comment environment
+\usepackage{fullpage}  %%smaller margins
+\usepackage{multicol}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+%Packages added to get the code block
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz-cd}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+%---------Commands----------
+\def\ZZ{\mathbb{Z}}
+\def\QQ{\mathbb{Q}}
+\def\PP{\mathbb{P}}
+\def\NN{\mathbb{N}}
+\def\OO{\mathcal{O}}
+\def\AA{\mathbb{A}}
+\def\BB{\mathbb{B}}
+\def\FF{\mathbb{F}}
+\def\LL{\mathbb{L}}
+\def\RR{\mathbb{R}}
+\def\CC{\mathbb{C}}
+\def\GG{\mathbb{G}}
+\def\lcm{\mathrm{lcm}}
+\def\ord{\mathrm{ord}}
+\def\rep{\mathrm{Rep}}
+\def\dom{\mathrm{Dom}}
+\def\ve{\varepsilon}
+\def\gal{\mathrm{Gal}}
+\def\emb{\mathrm{Emb}}
+\def\inter{\mathrm{Int}}
+\def\sub{\mathrm{Sub}}
+
+\newcommand{\dlegendre}[2]{\ensuremath{\left( \frac{#1}{#2} \right) }}
+\newcommand{\tlegendre}[2]{\ensuremath{\big( \frac{#1}{#2} \big) }}
+
+%----------Theorems----------
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem*{definition*}{Definition}
+\newtheorem{nondefinition}[theorem]{Non-Definition}
+\newtheorem{problem}{Problem}[section]
+\newtheorem*{tip}{Pro Tip}
+\newtheorem*{remark}{Remark}
+\numberwithin{equation}{subsection}
+
+\newenvironment{solution}
+{%
+  \vspace{0.5em}%
+  \hrule%
+  \vspace{0.2em}%
+  \noindent\textbf{Solution:}\!\!\!\!\!
+  \pushQED{\qed}
+}
+{%
+  \popQED
+  \vspace{.2em}
+  \hrule%
+  \vspace{0.75em}%
+}
+
+\newcommand{\separate}{
+    \vspace{.2in}
+    \hrule
+    \vspace{.2in}
+}
+
+
+\newcommand{\head}[1]{
+	\begin{center}
+		{\large #1}
+		\vspace{.05 in}
+	\end{center}
+	\bigskip 
+}
+
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+%Problem Set Data
+%number = 8
+%course = 261
+%semester = Fall 2025
+%path = /Users/thyde/Documents/Teaching/Vassar/Semesters/2025 Fall/Math 261 Fall 2025/Problem Sets/Problem Set 8
+
+\begin{document}
+\pagestyle{plain}
+
+%%---  sheet number for theorem counter
+\setcounter{section}{3}   
+
+\head{MATH 999, Summer 2026\\ Note 3: Galois Correspondence\\
+Trevor Hyde}
+
+%HEADER
+
+\begin{center}
+   ``Would you tell me, please, which way I ought to go from here?''\\
+   ``That depends a good deal on where you want to get to,'' said the Cat.\\
+   ``I don’t much care where$\ldots$''\\
+   ``Then it doesn’t matter which way you go.''\\
+
+   \vspace{.1in}
+   From \emph{Alice in Wonderland} by Lewis Carroll.
+\end{center}
+\vspace{.1in}
+
+In the previous note we defined Galois extensions and Galois groups.
+Our next goal is to study intermediate fields.
+That is, given a field extension $L/K$, what are all the fields $F$ which satisfy $K \subseteq F \subseteq L$?
+We first study this question for Galois extensions, which you should think of as the \emph{very nicest} of all finite extensions.
+
+\begin{problem}
+\label{prob: int to sub}
+    Suppose that $L/K$ is a Galois extension.
+    \blue{If $K \subseteq F \subseteq L$ is an intermediate field, prove that $L/F$ is also a Galois extension and that $\gal(L/F) \subseteq \gal(L/K)$ is a subgroup.}
+\end{problem}
+
+Let $\inter(L/K) := \{F : K \subseteq F \subseteq L\}$ be the set of all intermediate fields and let $\sub(L/K) = \{H : H \subseteq \gal(L/K)\}$ denote the set of all subgroups of $\gal(L/K)$.
+Then Problem \ref{prob: int to sub} shows that for a Galois extension $L/K$ we have a function $\Psi: \inter(L/K) \to \sub(L/K)$ defined by $\Psi(F) :=  \gal(L/F)$.
+The Galois Correspondence, which we are working towards, asserts that $\Psi$ is a bijection for all Galois extensions $L/K$.
+That is, the intermediate fields of $L/K$ correspond precisely to subgroups of $\gal(L/K)$.
+
+The best way to prove that a function is a bijection is to find its inverse.
+So that means we should start with a subgroup $H \subseteq \gal(L/K)$ and we want to use this to produce an intermediate field of $L/K$.
+We do this by constructing the \emph{fixed field} of $H$.
+
+\begin{problem}
+    Let $L/K$ be a Galois extension and let $H \subseteq \gal(L/K)$ be a subgroup.
+    Let 
+    \[
+        L^H := \{\alpha \in L : \sigma(\alpha) = \alpha \text{ for all }\sigma \in H\}.
+    \]
+    \blue{Prove that $L^H$ is a field and that $K \subseteq L^H \subseteq L$.}
+    Hence we have a function $\Phi : \sub(L/K) \to \inter(L/K)$ defined by $\Phi(H) := L^H$.
+    \blue{If $H_1 \subseteq H_2 \subseteq \gal(L/K)$ are subgroups, prove that $L^{H_2} \subseteq L^{H_1}$.}
+\end{problem}
+
+Now we have a function $\Phi$ mapping in the opposite direction as $\Psi$.
+We want to show that $\Phi$ and $\Psi$ are inverses.
+To show this we need to prove that $\Psi\Phi(H) = H$ and $\Phi\Psi(F) = F$ for all $H \in \sub(L/K)$ and all $F \in \inter(L/K)$.
+Let's unpack this first equality.
+By definition we have $\Psi\Phi(H) = \gal(L/L^H)$.
+Then our goal is to show that $\gal(L/L^H) = H$.
+One direction is straightforward.
+
+\begin{problem}
+    \blue{Prove that for all $H \in \sub(L/K)$ we have $H \subseteq \gal(L/L^H)$.}
+\end{problem}
+
+The other direction is more challenging.
+We need to show that the \emph{only} automorphisms of $L$ which fix $L^H$ are the elements of $H$.
+
+\begin{theorem}[Artin]
+    For all $H \in \sub(L/K)$ we have $[L : L^H] \leq |H|$.
+\end{theorem}
+
+\begin{proof}
+    Let $H = \{\sigma_1,\ldots, \sigma_n\}$, so that $n = |H|$.
+    Suppose for sake of contradiction that $[L : L^H] > n$.
+    Then we can find at least $n + 1$ elements $\alpha_0,\ldots, \alpha_n \in L$ which are linearly independent over $L^H$.
+    Let $x_0,\ldots, x_n$ be variables and consider the following system of $n$ linear equations:
+    \[
+        \sigma_i(\alpha_0)x_0 + \sigma_i(\alpha_1)x_1 + \ldots + \sigma_i(\alpha_n)x_n = 0,
+    \]
+    for $1 \leq i \leq n$.
+    Since this system has more variables than equations, it must have a nonzero solution.
+    Suppose that $(\beta_0,\ldots, \beta_n)$ is a solution with the fewest number of nonzero $\beta_j$.
+    Without loss of generality, we may relabel in order to assume that $\beta_0 \neq 0$.
+    Dividing everything by $\beta_0$ we may also assume without loss of generality that $\beta_0 = 1$.
+
+    Suppose that $\sigma_1$ is the identity.
+    If all the $\beta_i$ were elements of $L^H$, then 
+    \[
+        \alpha_0 + \alpha_1\beta_1 + \ldots + \alpha_n\beta_n = 0.
+    \]
+    However, we assumed that the $\alpha_i$ are linearly independent over $L^H$.
+    Thus there must be some $\beta_j \notin L^H$.
+    Hence there is some element $\sigma_{k} \in H$ which does not fix $\beta_j$, so $\sigma_k(\beta_j) \neq \beta_j$.
+    We now apply $\sigma_{k}$ to our entire system of equations with the $\beta$ solution plugged in to get equations
+    \[
+        \sigma_k\sigma_i(\alpha_0) + \sigma_k\sigma_i(\alpha_1)\sigma_k(\beta_1) + \ldots
+        + \sigma_k\sigma_i(\alpha_n)\sigma_k(\beta_n) = \sigma_k(0) = 0.
+    \]
+    Since $H$ is a subgroup and $\sigma_k \in H$, it follows that $\sigma_k\sigma_i \in H$ for each $i$.
+    Hence we can write $\sigma_{i'} := \sigma_k\sigma_i$.
+    \blue{Prove that the map $\sigma_i \mapsto \sigma_{i'}$ is a bijection of $H$ with itself.}
+    Thus we have
+    \[
+        \sigma_i(\alpha_0) + \sigma_i(\alpha_1)\sigma_k(\beta_1) + \ldots + \sigma_i(\alpha_n)\sigma_k(\beta_n) = 0
+    \]
+    for each $1 \leq i \leq n$.
+    Taking the difference between these equations and our original equations we get
+    \[
+        \sigma_i(\alpha_1)(\sigma_k(\beta_1) - \beta_1) + \ldots + \sigma_i(\alpha_n)(\sigma_k(\beta_n) - \beta_n) = 0.
+    \]
+    Notice that the $\alpha_0$ terms cancel in the difference.
+    Thus $(x_0,\ldots, x_n) = (0,\sigma_k(\beta_1) - \beta_1,\ldots, \sigma_k(\beta_n) - \beta_n)$ is a solution of our original system of equations.
+    It must be a nonzero solution since $\sigma_k(\beta_j) - \beta_j \neq 0$ by construction.
+    Furthermore, this solution has strictly fewer nonzero terms than $(x_0,\ldots, x_n) = (\beta_0,\ldots, \beta_n)$.
+    But this contradicts our assumption that the $\beta$ solution had the fewest nonzero coordinates.
+    Therefore, we must have $[L : L^H] \leq n$ after all.
+\end{proof}
+
+Combining Artin's theorem with a result from the previous note we have
+\[
+    |H| \leq |\gal(L/L^H)| = [L : L^H] \leq |H|.
+\]
+Therefore $|\gal(L/L^H)| = |H|$ and $H \subseteq \gal(L/L^H)$, which shows that $\gal(L/L^H) = H$.
+We have finished proving the hardest part of the Galois correspondence!
+
+Next we turn to proving that $\Phi\Psi(F) = F$.
+Unpacking definitions, this is equivalent to showing that $L^{\gal(L/F)} = F$.
+
+\begin{problem}
+    \blue{Prove that $F \subseteq L^{\gal(L/F)}$ for all $F \in \inter(L/K)$.}
+    To finish the proof, we just need to combine pieces we already have.
+    \blue{Prove that $[L : L^{\gal(L/F)}] = [L : F]$ and use this to conclude that $F =L^{\gal(L/F)}$.}
+\end{problem}
+
+We have now proved the following fundamental result of Galois theory.
+
+\begin{theorem}[Galois Correspondence, Part I]
+    Let $L/K$ be a Galois extension.
+    Then there is a bijection between $\sub(L/K)$, the subgroups of $\gal(L/K)$, and $\inter(L/K)$ the intermediate fields $K \subseteq F \subseteq L$.
+    The bijection is given by $F \mapsto \gal(L/F)$ with inverse $H \mapsto L^H$.
+\end{theorem}
+
+So what does the Galois correspondence tell us?
+It essentially tells us that the structure of a Galois extension $L/K$ is entirely determined by the structure of its Galois group $\gal(L/K)$.
+For one, the intermediate fields $K \subseteq F \subseteq L$ exactly correspond to the subgroups of $\gal(L/K)$.
+Thus if we know the group $\gal(L/K)$, we can use group theory to understand all its subgroups, and then the Galois correspondence translates this into a complete picture of all the intermediate fields.
+
+To start to get a feel for how this works, we analyze an example.
+
+\begin{problem}
+    Consider the extension $\QQ(\sqrt{2}, \sqrt{3})/\QQ$.
+    First we need to show that this extension is Galois.
+    \begin{enumerate}
+        \item \blue{Prove that $x^2 - 3$ does not have any roots in $\QQ(\sqrt{2})$ and use this to prove that 
+        \[
+            [\QQ(\sqrt{2},\sqrt{3}) : \QQ] = 4.
+        \]
+        }
+
+        \item \blue{Prove that $\QQ(\sqrt{2}, \sqrt{3})/\QQ$ is the splitting extension of the separable polynomial 
+        \[
+            f(x) = (x^2 - 2)(x^2 - 3).
+        \]
+        Hence $\QQ(\sqrt{2}, \sqrt{3})/\QQ$ is a Galois extension.
+        }
+        Note that this involves two steps: you need to show that $f(x)$ splits completely in this extension, and then you need to argue that it is the smallest extension over which our polynomial splits.
+    \end{enumerate}
+
+    We now know that $\QQ(\sqrt{2}, \sqrt{3})/\QQ$ is a degree 4 Galois extension.
+    Let $G := \gal(\QQ(\sqrt{2}, \sqrt{3})/\QQ)$.
+    Then we know that $|G| = [\QQ(\sqrt{2}, \sqrt{3}):\QQ] = 4$.
+    Up to isomorphism, there are exactly two groups of order 4, namely the cyclic group $C_4$ and the product $C_2 \times C_2$ of two cyclic groups of order 2.
+    So which one is $G$ isomorphic to?
+
+    \begin{enumerate}
+        \item[3.] Let $\sigma_2 \in \gal(\QQ(\sqrt{2})/\QQ)$ be the automorphism defined by $\sigma_2(\sqrt{2}) = -\sqrt{2}$.
+        \blue{Use Lemma 2.3 to prove that $\sigma_2$ has a unique extension to an element $\sigma_2 \in G$ such that $\sigma_2(\sqrt{3}) = \sqrt{3}$.
+        Make a similar argument to show there is an element $\sigma_3 \in G$ such that $\sigma_3(\sqrt{3}) = -\sqrt{3}$ and $\sigma_3(\sqrt{2}) = \sqrt{2}$.
+        }
+
+        \item[4.]
+        \blue{Prove that $G \cong C_2 \times C_2$.}
+
+        \item[5.]
+        \blue{The group $G$ has a total of five subgroups.
+        Find all of the subgroups (give generators for each one) and determine their order.}
+
+        \item[6.]
+        \blue{For each subgroup $H \subseteq G$, find generators for the extension $\QQ(\sqrt{2},\sqrt{3})^H$.
+        }
+        Most of these are straight forward, but one may be tricky!
+        The Galois correspondence tells us these are all of the intermediate fields of the extension $\QQ(\sqrt{2},\sqrt{3})/\QQ$.
+
+        \item[7.]
+        \blue{Which of the five possible intermediate fields you found in the previous problem is $\QQ(\sqrt{2} + \sqrt{3})$ equal to?} \textbf{Hint: }Use the Galois group!
+    \end{enumerate}
+\end{problem}
+
+
+\end{document}
